@@ -53,3 +53,19 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# KiCAD folder
+*.log
+*.docx
+outputs/
+spice/
+
+# CubeIDE
+Debug/
+Release/
+build/
+.metadata/
+.settings/
+*.launch
+*.tmp
+*.bak
