@@ -31,7 +31,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define I_STALL 0.8
+#define R_SHUNT 0.22
+#define THRESHOLD I_STALL*R_SHUNT/3.3*4095
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -46,7 +48,8 @@ TIM_HandleTypeDef htim14;
 TIM_HandleTypeDef htim16;
 
 /* USER CODE BEGIN PV */
-
+volatile uint8_t servo_power_rdy=0,angle=90,direction=1,buzzer=0;
+volatile uint32_t last_debounce=0,tick=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,13 +100,16 @@ int main(void)
   MX_TIM14_Init();
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
+  HAL_TIM_Base_Start_IT(&htim14);
+  HAL_TIM_Base_Start_IT(&htim16);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	TIM14->CCR1 = (angle/180.0*0.09+0.03)*65535;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -279,10 +285,10 @@ static void MX_TIM16_Init(void)
   htim16.Instance = TIM16;
   htim16.Init.Prescaler = 0;
   htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim16.Init.Period = 65535;
+  htim16.Init.Period = 31999;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim16.Init.RepetitionCounter = 0;
-  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
   {
     Error_Handler();
@@ -313,7 +319,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(buzzer_GPIO_Port, buzzer_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, fet_Pin|led_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(fet_GPIO_Port, fet_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(led_GPIO_Port, led_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : buzzer_Pin */
   GPIO_InitStruct.Pin = buzzer_Pin;
@@ -335,13 +344,49 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI2_3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_3_IRQn);
+
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
   /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+    if(HAL_ADC_GetValue(&hadc1)>THRESHOLD){
+    	buzzer=1;
+    }
+}
+void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
+{
+	HAL_NVIC_DisableIRQ(EXTI2_3_IRQn);
+	last_debounce=HAL_GetTick();
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, 1);
+	HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+	buzzer=0;
+}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
+{
+	if(htim->Instance == TIM16){
+		if(buzzer){
+			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
+		}
+		else{
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, 0);
+		}
+	}
+	else{
+		if(buzzer){
+			HAL_TIM_PWM_Stop(&htim14, TIM_CHANNEL_1); // servo control stop
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, 0); // servo power cut
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1); // alert LED on
+		}
+	}
+}
 /* USER CODE END 4 */
 
 /**
