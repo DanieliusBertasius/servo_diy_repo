@@ -36,7 +36,8 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+extern volatile uint8_t servo_power_rdy,angle,direction,buzzer;
+extern volatile uint32_t last_debounce,tick;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -67,7 +68,8 @@ void Error_Handler(void);
 #define led_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
-
+#define DEBOUNCE 500
+#define SOFTSTART 100
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
