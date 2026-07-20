@@ -70,6 +70,7 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 #define DEBOUNCE 500
 #define SOFTSTART 100
+#define ADCSTART 104
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

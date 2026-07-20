@@ -34,6 +34,7 @@
 #define I_STALL 0.8
 #define R_SHUNT 0.22
 #define THRESHOLD I_STALL*R_SHUNT/3.3*4095
+#define SAMPLES 3 //ignored samples
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,7 +49,7 @@ TIM_HandleTypeDef htim14;
 TIM_HandleTypeDef htim16;
 
 /* USER CODE BEGIN PV */
-volatile uint8_t servo_power_rdy=0,angle=90,direction=1,buzzer=0;
+volatile uint8_t servo_power_rdy=0,angle=90,direction=1,buzzer=0,count=0;
 volatile uint32_t last_debounce=0,tick=0;
 /* USER CODE END PV */
 
@@ -357,6 +358,12 @@ static void MX_GPIO_Init(void)
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
     if(HAL_ADC_GetValue(&hadc1)>THRESHOLD){
+    	count++;
+    }
+    else{
+    	count=0;
+    }
+    if(count>SAMPLES){
     	buzzer=1;
     }
 }

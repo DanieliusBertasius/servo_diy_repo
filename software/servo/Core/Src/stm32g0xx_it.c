@@ -131,7 +131,9 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-  HAL_ADC_Start_IT(&hadc1); // always first in systick
+  if(tick>=ADCSTART){
+	  HAL_ADC_Start_IT(&hadc1); // always first in systick
+  }
 
   tick=HAL_GetTick();
     if(tick>last_debounce+DEBOUNCE){
