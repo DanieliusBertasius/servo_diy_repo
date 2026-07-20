@@ -1,3 +1,5 @@
+Note to self: add ground test points in upcoming projects
+
 ![power schematic](screenshots/power.PNG)
 ![mcu schematic](screenshots/mcu.PNG)
 ![pcb](screenshots/pcb.png)
