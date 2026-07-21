@@ -371,26 +371,26 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
 	HAL_NVIC_DisableIRQ(EXTI2_3_IRQn);
 	last_debounce=HAL_GetTick();
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, 1);
+	HAL_GPIO_WritePin(fet_GPIO_Port, fet_Pin, 1);
 	HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+	HAL_GPIO_WritePin(led_GPIO_Port, led_Pin, 0);
 	buzzer=0;
 }
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
 	if(htim->Instance == TIM16){
 		if(buzzer){
-			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
+			HAL_GPIO_TogglePin(buzzer_GPIO_Port, buzzer_Pin);
 		}
 		else{
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, 0);
+			HAL_GPIO_WritePin(buzzer_GPIO_Port, buzzer_Pin, 0);
 		}
 	}
 	else{
 		if(buzzer){
 			HAL_TIM_PWM_Stop(&htim14, TIM_CHANNEL_1); // servo control stop
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, 0); // servo power cut
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1); // alert LED on
+			HAL_GPIO_WritePin(fet_GPIO_Port, fet_Pin, 0); // servo power cut
+			HAL_GPIO_WritePin(led_GPIO_Port, led_Pin, 1); // alert LED on
 		}
 	}
 }
