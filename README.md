@@ -1,10 +1,14 @@
 Note to self: add ground test points in upcoming projects
+![Finished PCB photo](screenshots/photo.jpg)
 
-PSU
+<br>
+PSU:
 
-![power schematic](screenshots/power.PNG)
+![Power schematic](screenshots/power.PNG)
 
-MCU
-![mcu schematic](screenshots/mcu.PNG)
-![pcb](screenshots/pcb.png)
-![3d view](screenshots/3d.PNG)
+<br>
+MCU:
+
+![MCU schematic](screenshots/mcu.PNG)
+![PCB](screenshots/pcb.png)
+![3D view](screenshots/3d.PNG)
