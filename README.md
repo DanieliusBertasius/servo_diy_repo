@@ -1,4 +1,5 @@
 Note to self: add ground test points in upcoming projects
+
 ![Finished PCB photo](screenshots/photo.jpg)
 
 <br>
