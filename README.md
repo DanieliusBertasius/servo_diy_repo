@@ -1,15 +1,15 @@
 Note to self: add ground test points in upcoming projects
 
-![Finished PCB photo](screenshots/photo.jpg)
+<img src="screenshots/photo.jpg" alt="Finished PCB photo" width="50%">
 
 <br>
 PSU:
 
-![Power schematic](screenshots/power.PNG)
+<img src="screenshots/power.PNG" alt="Power schematic" width="75%">
 
 <br>
 MCU:
 
-![MCU schematic](screenshots/mcu.PNG)
-![PCB](screenshots/pcb.png)
-![3D view](screenshots/3d.PNG)
+<img src="screenshots/mcu.PNG" alt="MCU schematic" width="75%">
+<img src="screenshots/pcb.png" alt="PCB" width="75%">
+<img src="screenshots/3d.PNG" alt="3D view" width="75%">
